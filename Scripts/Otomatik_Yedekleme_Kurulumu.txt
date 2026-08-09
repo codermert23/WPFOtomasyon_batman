@@ -1,0 +1,62 @@
+﻿=== SAATLIK OTOMATIK YEDEKLEME KURULUMU (WPFDatabase -> Google Drive) ===
+
+Bu talimat, WPFDatabase veritabanindan saatte bir otomatik .bak yedegi alip
+Google Drive'a (Mirror modu) otomatik yuklenmesini, ve sadece son 3 yedegin
+tutulmasini (4. geldiginde en eskisi silinir) saglar.
+
+ON KOSULLAR
+-----------
+1) Google Drive masaustu uygulamasi kurulu ve "Sürücüyü Yansıt" (Mirror) modunda calisiyor olmali.
+   Mirror modda Google Drive, C:\Users\<KULLANICI>\Drive'im\ klasoru olusturur ve
+   icine konan her sey otomatik olarak buluta yuklenir.
+2) SQL Server Express calisiyor olmali, instance adi ".\SQLEXPRESS" (App.config ile ayni).
+3) Su an oturum acik olan Windows hesabinin SQL Server'a Windows Authentication ile
+   erisebildigi dogrulanmis olmali (asagida 2. adim).
+
+ADIM 1 - Admin CMD ac
+----------------------
+Baslat menusune "cmd" yaz, sag tik -> "Yonetici olarak calistir".
+
+ADIM 2 - SQL Server erisimini dogrula
+--------------------------------------
+sqlcmd -S .\SQLEXPRESS -E -Q "SELECT @@VERSION"
+
+Bir surum bilgisi donerse devam et. Hata alirsan instance adi farkli olabilir,
+"sc query state=all | findstr MSSQL" ile gercek instance adini bul.
+
+ADIM 3 - Calistiran hesabi not al
+-----------------------------------
+whoami
+
+Cikan "bilgisayaradi\kullaniciadi" degerini not al. Zamanlanmis gorev bu hesapla calisacak.
+
+ADIM 4 - Script dosyasini olustur
+-----------------------------------
+C:\Scripts\ klasoru yoksa olustur, icine bu klasordeki "saatlik_yedek.bat" dosyasini kopyala.
+(Script otomatik olarak %USERNAME% degiskenini kullanir, elle kullanici adi degistirmeye gerek yoktur.)
+
+ADIM 5 - Elle test et
+------------------------
+C:\Scripts\saatlik_yedek.bat
+
+Hata cikmamali. C:\Users\<KULLANICI>\Drive'im\Yedekler klasorunde
+"WPFDatabase_YYYYAAGG_SSDD.bak" adinda bir dosya olusmus olmali.
+
+ADIM 6 - Saatlik gorevi kur
+------------------------------
+schtasks /create /tn "WPFDB_SaatlikYedek" /tr "C:\Scripts\saatlik_yedek.bat" /sc hourly /mo 1 /ru "<3.ADIMDAKI_HESAP>" /rp "<O_HESABIN_SIFRESI>" /rl highest
+
+ADIM 7 - Gorevi elle tetikleyip dogrula
+-------------------------------------------
+schtasks /run /tn "WPFDB_SaatlikYedek"
+
+Sonra "taskschd.msc" ac, gorevi bul, Gecmis sekmesinde basari (kod 0) gorulmeli.
+
+ADIM 8 - Bulutta dogrula
+---------------------------
+drive.google.com adresinden ilgili hesapla giris yap, Yedekler klasorunde
+dosyanin gercekten bulutta gorundugunu kontrol et. Sadece yerel klasorde
+gorunmesi yeterli degildir.
+
+NOT: 4. yedek olusunca en eski (1.) otomatik silinir, hem yerelde hem builtta
+en fazla 3 .bak dosyasi tutulur.
