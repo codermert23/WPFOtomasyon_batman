@@ -1,33 +1,13 @@
 ﻿=== NW NEON KOCAELI VERITABANI KURULUM TALIMATI ===
+Bu talimatlar, komut istemi (CMD) uzerinden WPF_DB_batman.bak yedek dosyasindan 'WPFDatabase' veritabanini kurmak (restore) icindir.
 
-Bu talimatlar, komut istemi (CMD) uzerinden NWneonv1.0.bak yedek dosyasindan 'WPFDatabase' veritabanini kurmak (restore) icindir.
+"WPF_DB_batman.bak" dosyasini bilgisayarinizda "C:\yedek" klasorune koyun.
+(Eger Yedek klasoru yoksa C surucusunde olusturun)
 
-1. "NWneonv1.0.bak" dosyasini bilgisayarinizda "C:\Yedek\" klasorune koyun.
-   (Eger Yedek klasoru yoksa C surucusunde olusturun)
-2. Komut Istemini (CMD) Yonetici Olarak Calistirin.
-3. Asagidaki komutu CMD ekranina yapistirip Enter'a basin:
+Komut Istemini (CMD) Yonetici Olarak Calistirin.
 
-Eger SQL Server surumunuz ucretsiz SQLEXPRESS ise:
-sqlcmd -S .\SQLEXPRESS -E -Q "RESTORE DATABASE WPFDatabase FROM DISK='C:\yedek\NWneonv1.0.bak' WITH REPLACE"
+Asagidaki komutu CMD ekranina yapistirip Enter'a basin:
 
-Eger SQL Server tam surum (sadece localhost veya bilgisayar adi) kullaniyorsaniz:
-sqlcmd -S localhost -E -Q "RESTORE DATABASE WPFDatabase FROM DISK='C:\yedek\NWneonv1.0.bak' WITH REPLACE"
+sqlcmd -S .\SQLEXPRESS -E -Q "RESTORE DATABASE WPFDatabase FROM DISK='C:\yedek\WPF_DB_batman.bak' WITH REPLACE"
 
---- Onemli Notlar ---
-* -S .\SQLEXPRESS : SQL Sunucu adidir. Kocaeli'ndeki bilgisayarin SQL ismine gore burayi degistirmeniz gerekebilir.
-* -E : Windows yetkilendirmesi (sifresiz, direkt Windows oturumu ile) giris yapilacagini belirtir.
-* WITH REPLACE : Veritabani daha onceden varsa uzerine yazilmasini saglar.
 
-=== 15 GUNLUK DEMO LISANS TABLOLARI ===
-
-Uygulama, SistemLisans ve LisansSifreleri tablolarini ilk acilista kendisi
-(yoksa) otomatik olarak olusturur; elle bir islem yapmaniza gerek yoktur.
-
-Eger bu tablolari yeni bir NWneonv1.0.bak yedegine gomerek onceden
-hazir hale getirmek isterseniz, "Lisans_Kurulum.sql" dosyasini calistirin:
-
-sqlcmd -S .\SQLEXPRESS -E -d WPFDatabase -i "Lisans_Kurulum.sql"
-
-NOT: LisansSifreleri tablosunda sadece SHA-256 hash degerleri bulunur;
-musteriye telefonla verilecek gercek (duz metin) aktivasyon kodlari bu
-depoda YOKTUR, ayri ve gizli tutulan bir dosyada saklanmaktadir.
