@@ -8,6 +8,6 @@ Komut Istemini (CMD) Yonetici Olarak Calistirin.
 
 Asagidaki komutu CMD ekranina yapistirip Enter'a basin:
 
-sqlcmd -S .\SQLEXPRESS -E -Q "RESTORE DATABASE WPFDatabase FROM DISK='C:\yedek\WPF_DB_batman.bak' WITH REPLACE"
+sqlcmd -S .\SQLEXPRESS -E -Q "RESTORE DATABASE WPFDatabase FROM DISK='C:\yedek\WPF_DB_batman.bak' WITH MOVE 'per10Database' TO 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\WPFDatabase.mdf', MOVE 'per10Database_log' TO 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\WPFDatabase_log.ldf', REPLACE"
 
 
