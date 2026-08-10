@@ -1,45 +1,11 @@
-﻿=== NW NEON KOCAELI VERITABANI KURULUM TALIMATI (D:\SQLData) ===
-Bu talimatlar, komut istemi (CMD) uzerinden WPF_DB_batman.bak yedek dosyasindan
-'WPFDatabase' veritabanini D:\SQLData konumuna kurmak (restore) icindir.
+﻿
 
-ON KOSUL
---------
-SQL Server Express 2022 kurulu olmali. D:\SQLData klasoru olusturulmus olmali.
-(Kurulum sirasinda "Data Directories" sekmesinden Data root directory olarak
-D:\SQLData secildiyse, SQL Server servis hesabinin bu klasore yazma izni
-kurulum tarafindan otomatik verilir. Klasoru kurulumdan SONRA elle actiysaniz,
-asagidaki icacls komutuyla izni kendiniz vermeniz gerekir:
-
-icacls "D:\SQLData" /grant "NT SERVICE\MSSQL$SQLEXPRESS:(OI)(CI)F"
-)
-
-ADIM 1 - Yedek dosyasini yerlestir
-------------------------------------
-"WPF_DB_batman.bak" dosyasini bilgisayarinizda "C:\yedek" klasorune koyun.
-(Eger yedek klasoru yoksa C surucusunde olusturun. Bu klasor sadece yedek
-dosyasinin kaynagi icindir, veritabani dosyalari asagida D:\SQLData'ya gidecek.)
-
-ADIM 2 - CMD'yi Yonetici Olarak Calistirin
-
-ADIM 3 - Yedek icindeki mantiksal dosya adlarini ogren
------------------------------------------------------------
 sqlcmd -S .\SQLEXPRESS -E -Q "RESTORE FILELISTONLY FROM DISK='C:\yedek\WPF_DB_batman.bak'"
 
-Cikan tabloda "LogicalName" sutununa bakin (genelde iki satir olur: veri dosyasi
-ve log dosyasi icin, ornegin "WPFDatabase" ve "WPFDatabase_log"). Bu isimler
-farkliysa asagidaki komutta MOVE kisimlarini ona gore guncelleyin.
 
-ADIM 4 - Veritabanini D:\SQLData konumuna restore edin
--------------------------------------------------------------
 sqlcmd -S .\SQLEXPRESS -E -Q "RESTORE DATABASE WPFDatabase FROM DISK='C:\yedek\WPF_DB_batman.bak' WITH REPLACE, MOVE 'WPFDatabase' TO 'D:\SQLData\WPFDatabase.mdf', MOVE 'WPFDatabase_log' TO 'D:\SQLData\WPFDatabase_log.ldf'"
 
-ADIM 5 - Dogrulama
-----------------------
+
 sqlcmd -S .\SQLEXPRESS -E -Q "SELECT name, physical_name FROM sys.master_files WHERE database_id = DB_ID('WPFDatabase')"
 
-physical_name sutununda iki satirin da D:\SQLData\ ile basladigini gorun.
-
-NOT: App.config icindeki baglanti dizesini (Data Source=.\SQLEXPRESS;
-Initial Catalog=WPFDatabase) DEGISTIRMEYE gerek yok. Uygulama sadece instance
-adi ve veritabani adiyla ilgilenir, fiziksel dosyanin C'de mi D'de mi oldugu
-uygulama tarafindan bilinmez/onemli degildir.
+sqlcmd -S .\SQLEXPRESS -d WPFDatabase -E -Q "SELECT * FROM dbo.SistemLisans;"
